@@ -1,7 +1,9 @@
 
 package br.dev.thaissa.FastFuriousFood.api.controller;
 
-//@RestController
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
 public class ProdutoController {
     
 }
