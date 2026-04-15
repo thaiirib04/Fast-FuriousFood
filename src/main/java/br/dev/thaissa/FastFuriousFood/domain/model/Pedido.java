@@ -1,25 +1,35 @@
 
 package br.dev.thaissa.FastFuriousFood.domain.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Pedido {
-    private long id;
+    
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long id;
     private String nome;
     private String CPF;
+    
 
     public Pedido() {
     }
 
-    public Pedido(long id, String nome, String CPF) {
+    public Pedido(Long id, String nome, String CPF) {
         this.id = id;
         this.nome = nome;
         this.CPF = CPF;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
