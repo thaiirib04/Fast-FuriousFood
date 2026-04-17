@@ -1,9 +1,9 @@
 package br.dev.thaissa.FastFuriousFood.api.controller;
 
 import br.dev.thaissa.FastFuriousFood.domain.model.Pedido;
-import br.dev.thaissa.FastFuriousFood.domain.repository.PedidoRepository;
+import br.dev.thaissa.FastFuriousFood.domain.model.StatusPedido;
+import br.dev.thaissa.FastFuriousFood.domain.service.PedidoService;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class PedidoController {
     
     @Autowired
-    private PedidoRepository pedidoRepository;
+    private PedidoService pedidoService;
         
     @GetMapping("/pedido")
     public List<Pedido> lista(){
-       return pedidoRepository.findAll();
+       return pedidoService.listar();
       
     }
     
     @GetMapping("/pedido/{id}")
     public ResponseEntity<Pedido> buscar(@PathVariable Long id) {
-        Optional<Pedido> pedido = pedidoRepository.findById(id);
-        if (pedido.isPresent()) {
-            return ResponseEntity.ok(pedido.get());
-        } else {
+        try {
+            return ResponseEntity.ok(pedidoService.buscarOuFalhar(id));
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -43,29 +42,41 @@ public class PedidoController {
     @PostMapping("/pedido")
     @ResponseStatus(HttpStatus.CREATED)
     public Pedido adicionar (@RequestBody Pedido pedido){
-        return pedidoRepository.save(pedido);
+        return pedidoService.criar(pedido);
     }
     
     @PutMapping("/pedido/{id}")
     public ResponseEntity<Pedido> atualizar(@PathVariable Long id,
                                              @RequestBody Pedido pedido){
-        if (!pedidoRepository.existsById(id)){
+        try {
+            return ResponseEntity.ok(pedidoService.atualizar(id, pedido));
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-        
-        pedido.setId(id);
-        pedido = pedidoRepository.save(pedido);
-        return ResponseEntity.ok(pedido);
     }
     
+    // CANCELAR (não deletar!)
     @DeleteMapping("/pedido/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
-        
-        if (!pedidoRepository.existsById(id)){
+    public ResponseEntity<Pedido> cancelar(@PathVariable Long id){
+        try {
+            return ResponseEntity.ok(pedidoService.cancelar(id));
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-        
-        pedidoRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/pedido/status/{status}")
+    public List<Pedido> buscarPorStatus(@PathVariable StatusPedido status){
+        return pedidoService.buscarPorStatus(status);
+    }
+    
+    @PutMapping("/pedido/status/{id}")
+    public ResponseEntity<Pedido> atualizarStatus(@PathVariable Long id,
+                                                  @RequestBody StatusPedido status){
+        try {
+            return ResponseEntity.ok(pedidoService.atualizarStatus(id, status));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
