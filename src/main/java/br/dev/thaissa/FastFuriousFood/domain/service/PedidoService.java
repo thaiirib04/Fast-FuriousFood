@@ -7,6 +7,7 @@ import br.dev.thaissa.FastFuriousFood.domain.repository.PedidoRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import br.dev.thaissa.FastFuriousFood.domain.model.ItensPedido;
 
 
 @Service
@@ -21,11 +22,6 @@ public class PedidoService {
     public Pedido buscarOuFalhar(Long id) {
         return pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-    }
-
-    public Pedido criar(Pedido pedido) {
-        pedido.setStatus(StatusPedido.ABERTO);
-        return pedidoRepository.save(pedido);
     }
 
     public Pedido atualizar(Long id, Pedido pedido) {
@@ -50,6 +46,26 @@ public class PedidoService {
     public Pedido atualizarStatus(Long id, StatusPedido status) {
         Pedido pedido = buscarOuFalhar(id);
         pedido.setStatus(status);
+        return pedidoRepository.save(pedido);
+    }
+    
+    public Pedido criar(Pedido pedido) {
+        Long numero = pedidoRepository.count() + 1;
+    
+        pedido.setNumero(numero.intValue());
+        pedido.setStatus(StatusPedido.ABERTO);
+        
+        //vincular itens ao pedido
+        if (pedido.getItens() != null){
+            pedido.getItens().forEach(item -> {
+                item.setPedido(pedido);
+        
+        if (item.getProduto() != null) {
+            item.setPrecoUnitario(item.getProduto().getPreco());
+        }
+    });
+}
+    
         return pedidoRepository.save(pedido);
     }
 }

@@ -19,8 +19,7 @@ public class Produto {
     @NotBlank
     @Size(max = 60)
     private String nome;
-    
-    @NotBlank
+  
     @Positive
     private double preco;
     

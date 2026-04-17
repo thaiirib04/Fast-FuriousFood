@@ -1,10 +1,17 @@
 
 package br.dev.thaissa.FastFuriousFood.domain.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Pedido {
@@ -12,65 +19,69 @@ public class Pedido {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nome;
-    private String CPF;
     
-
+    
+    private Integer numero; //numero do ticket
+    
+    @Enumerated(EnumType.STRING)
+    private StatusPedido status;
+    
+    private LocalDateTime dataHora;
+    
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private List<ItensPedido> itens;
+  
     public Pedido() {
     }
 
-    public Pedido(Long id, String nome, String CPF) {
+    public Pedido(Long id, Integer numero, StatusPedido status, LocalDateTime dataHora) {
         this.id = id;
-        this.nome = nome;
-        this.CPF = CPF;
+        this.numero = numero;
+        this.status = status;
+        this.dataHora = dataHora;
     }
+
+   @PrePersist
+   public void prePersist(){
+       this.dataHora = LocalDateTime.now();
+   }
 
     public Long getId() {
         return id;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public StatusPedido getStatus() {
+        return status;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setStatus(StatusPedido status) {
+        this.status = status;
     }
 
-    public String getCPF() {
-        return CPF;
+    public LocalDateTime getDataHora() {
+        return dataHora;
     }
 
-    public void setCPF(String CPF) {
-        this.CPF = CPF;
+    public List<ItensPedido> getItens() {
+        return itens;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 23 * hash + (int) (this.id ^ (this.id >>> 32));
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Pedido other = (Pedido) obj;
-        return this.id == other.id;
+    public void setItens(List<ItensPedido> itens) {
+        this.itens = itens;
     }
     
     
-    
+
 }
