@@ -19,64 +19,49 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/fastfurious")
+@RequestMapping("/fastfurious/produto")
 public class ProdutoController {
     
     @Autowired
     private ProdutoService produtoService;
     
-    // GET/produto
-    @GetMapping("/produto")
-    public List<Produto> lista() {
+    // GET
+    @GetMapping
+    public List<Produto> listar() {
         return produtoService.listar();
     }
     
-    // GET/produto/{id}
-    @GetMapping("/produto/{id}")
-    public ResponseEntity<Produto> buscar(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(produtoService.buscarOuFalhar(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    // GET/{id}
+    @GetMapping("/{id}")
+    public Produto buscar(@PathVariable Long id) {
+        return produtoService.buscarOuFalhar(id);
     }
     
-    // POST/produto
-    @PostMapping("/produto")
+    // POST
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Produto adicionar (@Valid @RequestBody Produto produto){
         return produtoService.salvar(produto);
     }
     
-    // PUT/produto/{id}
-    @PutMapping("/produto/{id}")
-    public ResponseEntity<Produto> atualizar(@Valid @PathVariable Long id,
-                                             @RequestBody Produto produto){
-        try {
-            Produto atualizado = produtoService.atualizar(id, produto);
-            return ResponseEntity.ok(atualizado);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    // PUT
+    @PutMapping("/{id}")
+    public Produto atualizar(@PathVariable Long id,
+                             @Valid @RequestBody Produto produto) {
+        return produtoService.atualizar(id, produto);
     }
     
-    // DELETE/produto/{id}
-    @DeleteMapping("/produto/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
-        
-        try {
-            produtoService.excluir(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    // DELETE/{id}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable Long id) {
+        produtoService.excluir(id);
     }
     
-    // GET/produto/cat/{categoria}
-    @GetMapping("/produto/cat/{categoria}")
-    public ResponseEntity<List<Produto>> buscarPorCategoria(@PathVariable String categoria){
-        List<Produto> produtos = produtoService.buscarPorCategoria(categoria);
-        return ResponseEntity.ok(produtos);
+    // GET/cat/{categoria}
+    @GetMapping("/cat/{categoria}")
+    public List<Produto> buscarPorCategoria(@PathVariable String categoria) {
+        return produtoService.buscarPorCategoria(categoria);
     }
 
 

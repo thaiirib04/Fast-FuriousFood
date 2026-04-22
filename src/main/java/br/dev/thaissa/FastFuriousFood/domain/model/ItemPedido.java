@@ -1,37 +1,46 @@
 
 package br.dev.thaissa.FastFuriousFood.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
-public class ItensPedido {
+public class ItemPedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     // relação com pedido
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "pedido_id")
     private Pedido pedido;
     
     // relação com produto
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "produto_id")
     private Produto produto;
     
+    
+    @NotNull
+    @Positive
     private Integer quantidade;
     
+    @NotNull
     private Double precoUnitario;
 
-    public ItensPedido() {
+    public ItemPedido() {
     }
 
-    public ItensPedido(Long id, Pedido pedido, Produto produto, Integer quantidade, Double precoUnitario) {
+    public ItemPedido(Long id, Pedido pedido, Produto produto, Integer quantidade, Double precoUnitario) {
         this.id = id;
         this.pedido = pedido;
         this.produto = produto;
