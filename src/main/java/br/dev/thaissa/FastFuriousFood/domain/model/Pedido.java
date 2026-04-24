@@ -62,7 +62,8 @@ public class Pedido {
     }
     
     //total do pedido
-    public double getTotal() {
+    public Double getTotal() {
+        if(itens == null) return 0.0;
         return itens.stream()
             .mapToDouble(i -> i.getPrecoUnitario() * i.getQuantidade())
             .sum();

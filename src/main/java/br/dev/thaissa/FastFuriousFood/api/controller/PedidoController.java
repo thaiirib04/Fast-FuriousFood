@@ -1,5 +1,6 @@
 package br.dev.thaissa.FastFuriousFood.api.controller;
 
+import br.dev.thaissa.FastFuriousFood.api.dto.PedidoDTO;
 import br.dev.thaissa.FastFuriousFood.domain.model.Pedido;
 import br.dev.thaissa.FastFuriousFood.domain.model.StatusPedido;
 import br.dev.thaissa.FastFuriousFood.domain.service.PedidoService;
@@ -39,8 +40,8 @@ public class PedidoController {
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Pedido criar (@Valid @RequestBody Pedido pedido){
-        return pedidoService.criar(pedido);
+    public Pedido criar (@Valid @RequestBody PedidoDTO dto){
+        return pedidoService.criar(dto);
     }
     
     @PutMapping("/{id}")

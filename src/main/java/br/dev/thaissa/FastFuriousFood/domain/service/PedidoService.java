@@ -1,6 +1,8 @@
 
 package br.dev.thaissa.FastFuriousFood.domain.service;
 
+import br.dev.thaissa.FastFuriousFood.api.dto.ItemPedidoDTO;
+import br.dev.thaissa.FastFuriousFood.api.dto.PedidoDTO;
 import br.dev.thaissa.FastFuriousFood.domain.model.Pedido;
 import br.dev.thaissa.FastFuriousFood.domain.model.StatusPedido;
 import br.dev.thaissa.FastFuriousFood.domain.repository.PedidoRepository;
@@ -8,6 +10,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.dev.thaissa.FastFuriousFood.domain.model.ItemPedido;
+import br.dev.thaissa.FastFuriousFood.domain.model.Produto;
+import br.dev.thaissa.FastFuriousFood.domain.repository.ProdutoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -67,29 +71,29 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
     
-    public Pedido criar(Pedido pedido) {
+    @Autowired
+    private ProdutoRepository produtoRepository;
+    
+    public Pedido criar(PedidoDTO dto) {
 
         Pedido novoPedido = new Pedido();
         novoPedido.setStatus(StatusPedido.ABERTO);
 
-        if (pedido.getItens() == null || pedido.getItens().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pedido sem itens");
-        }
+        for (ItemPedidoDTO itemDTO : dto.getItens()) {
 
-        for (ItemPedido item : pedido.getItens()) {
+            Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
+                    .orElseThrow(() ->
+                            new ResponseStatusException(HttpStatus.BAD_REQUEST, "Produto não encontrado"));
 
-            if (item.getProduto() == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Produto obrigatório");
-            }
+            ItemPedido item = new ItemPedido();
+            item.setProduto(produto);
+            item.setQuantidade(itemDTO.getQuantidade());
+            item.setPrecoUnitario(produto.getPreco());
 
-            item.setPrecoUnitario(item.getProduto().getPreco());
             novoPedido.adicionarItem(item);
         }
 
-        //salva primeiro para gerar ID
         novoPedido = pedidoRepository.save(novoPedido);
-
-        //usa ID como número sequencial
         novoPedido.setNumero(novoPedido.getId().intValue());
 
         return pedidoRepository.save(novoPedido);
